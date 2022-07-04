@@ -36,6 +36,6 @@ void _processSpectateCommand(ArgResults command, ArgResults root) async {
     Logger.root.level = verbose ? Level.ALL : Level.INFO;
 
     final onlooker = Onlooker();
-    onlooker.watch(command['dir'], (command['cmd'] as String).split(' '));
+    onlooker.watch(command['dir'], (command['cmd'] as String).split(' '), cmdDir: command['cmd-dir']);
   }
 }

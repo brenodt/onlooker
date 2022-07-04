@@ -11,8 +11,11 @@ ArgResults? parseArguments(List<String> arguments) {
     ..addOption(
       'cmd',
       mandatory: true,
-
       help: 'the command to be executed when something changes',
+    )
+    ..addOption(
+      'cmd-dir',
+      help: 'the directory where the defined command should be executed. Defaults to the value of "dir"',
     )
     ..addFlag(
       'verbose',

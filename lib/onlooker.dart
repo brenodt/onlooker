@@ -13,7 +13,7 @@ class Onlooker {
   StreamSubscription? _watcher;
   StreamSubscription? _stdin;
 
-  void watch(String dir, List<String> cmd) {
+  void watch(String dir, List<String> cmd, {String? cmdDir}) {
     assert(cmd.isNotEmpty);
     _log.info('Watching directory: ${Directory(dir).absolute.path}');
     stdout.writeln('''
@@ -25,14 +25,15 @@ onlooker spectate key commands:
 ''');
 
     _log.config(
-        'creating watcher with parameters: \n\t· Directory: "$dir"\n\t· Command: $cmd');
+        'creating watcher with parameters: \n\t· Directory: "$dir"\n\t· Command: $cmd\n\t· Command Directory: "${cmdDir ?? dir}');
     final watcher = DirectoryWatcher(dir);
 
     _watcher = watcher.events.listen((event) {
       _log.fine('file change identified');
       if (_processing) return;
       _processing = true;
-      Future.delayed(const Duration(seconds: 1), () => _process(dir, cmd));
+      Future.delayed(
+          const Duration(seconds: 1), () => _process(cmdDir ?? dir, cmd));
     });
 
     stdin.lineMode = false;
@@ -44,12 +45,12 @@ onlooker spectate key commands:
     });
   }
 
-  Future<void> _process(String dir, List<String> cmd) async {
-    _log.fine('processing command:\n\t$cmd');
+  Future<void> _process(String cmdDir, List<String> cmd) async {
+    _log.fine('processing command:\n\t$cmd\nfrom directory:\n\t$cmdDir');
     final res = await Process.run(
       cmd.first,
       cmd.length == 1 ? [] : cmd.sublist(1),
-      workingDirectory: dir,
+      workingDirectory: cmdDir,
       runInShell: true,
     );
     _log.fine(
